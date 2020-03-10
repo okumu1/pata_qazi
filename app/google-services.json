@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "66658020548",
+    "firebase_url": "https://pataqazifinal.firebaseio.com",
+    "project_id": "pataqazifinal",
+    "storage_bucket": "pataqazifinal.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:66658020548:android:ed2aff67d5ce4469396d91",
+        "android_client_info": {
+          "package_name": "com.tuk.pata_qazi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "66658020548-hmjfhn4eca3a5p3h77e3cjen04gsobpv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tuk.pata_qazi",
+            "certificate_hash": "ba6cdd2d78f97c5efbae97d1bb4d5a55ad67a1d1"
+          }
+        },
+        {
+          "client_id": "66658020548-k2e16g6vt06g5vof4ton882q40183daf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDsF-Qf5wKok3HaW3qw9QGso6nYIKiNksc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "66658020548-k2e16g6vt06g5vof4ton882q40183daf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

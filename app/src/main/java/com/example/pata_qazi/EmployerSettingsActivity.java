@@ -54,7 +54,6 @@ public class EmployerSettingsActivity extends AppCompatActivity
 
    // private  Uri resultUri;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -73,15 +72,12 @@ public class EmployerSettingsActivity extends AppCompatActivity
 
         getUserInfo();
 
-
-
         mConfirm.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
                 saveUserInformation();
-
             }
         });
 
@@ -92,7 +88,6 @@ public class EmployerSettingsActivity extends AppCompatActivity
             {
                 finish();
                 return;
-
             }
         });
 

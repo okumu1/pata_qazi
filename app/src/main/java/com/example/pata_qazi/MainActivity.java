@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity
         mProfessional = (Button) findViewById(R.id.professional);
         mEmployer = (Button) findViewById(R.id.employer);
 
-
+        startService(new Intent(MainActivity.this, onAppKilled.class));
         mProfessional.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -34,7 +34,6 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-
         mEmployer.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -47,6 +46,5 @@ public class MainActivity extends AppCompatActivity
                 return;
             }
         });
-
     }
 }

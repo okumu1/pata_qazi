@@ -14,6 +14,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.RatingBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.geofire.GeoFire;
@@ -44,9 +49,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class EmployerMapActivty extends FragmentActivity implements OnMapReadyCallback,
@@ -59,7 +66,7 @@ public class EmployerMapActivty extends FragmentActivity implements OnMapReadyCa
     Location mLastLocation;
     LocationRequest mLocationRequest;
 
-    private Button mlogout, mRequest, mSettings;
+    private Button mlogout, mRequest, mSettings, mHistory;
 
     private LatLng employerLocation;
 
@@ -67,7 +74,19 @@ public class EmployerMapActivty extends FragmentActivity implements OnMapReadyCa
 
     private Marker jobLocationMarker;
 
-    private String location;
+    private String location, requestService;
+
+    private LatLng locationLatLng;
+
+    private LinearLayout mProInfo;
+
+    //private ImageView mProProfileImage;
+
+    private TextView mProName, mProPhone, mProCategory;
+
+    private RadioGroup mRadioGroup;
+
+    private RatingBar mRatingBar;
 
 
 
@@ -83,15 +102,26 @@ public class EmployerMapActivty extends FragmentActivity implements OnMapReadyCa
             ActivityCompat.requestPermissions(EmployerMapActivty.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
         }
         else
-            {
-                mapFragment.getMapAsync(this);
-            }
+        {
+            mapFragment.getMapAsync(this);
+        }
 
-        mRequest = findViewById(R.id.request);
+        locationLatLng = new LatLng(0.0, 0.0);
 
-        mSettings = findViewById(R.id.settings);
+        mProInfo = (LinearLayout) findViewById(R.id.proInfo);
+        mProName = (TextView) findViewById(R.id.proName);
+        mProPhone = (TextView) findViewById(R.id.proPhone);
+        mProCategory = (TextView) findViewById(R.id.proCategory);
 
-        mlogout = findViewById(R.id.logout);
+        mRadioGroup = (RadioGroup) findViewById(R.id.radioGroup);
+        mRadioGroup.check(R.id.Maintenance);
+
+        mlogout = (Button) findViewById(R.id.logout);
+        mRequest = (Button) findViewById(R.id.request);
+        mSettings = (Button) findViewById(R.id.settings);
+        mHistory = (Button) findViewById(R.id.history);
+
+        mRatingBar = (RatingBar) findViewById(R.id.ratingBar);
 
         mlogout.setOnClickListener(new View.OnClickListener()
         {
@@ -117,59 +147,39 @@ public class EmployerMapActivty extends FragmentActivity implements OnMapReadyCa
                 if (requestBol)
 
                 {
-                    //removing request from db
-                    requestBol = false;
+                    endJob();
+                }
+                else
+                {
+                    int selectId = mRadioGroup.getCheckedRadioButtonId();
 
-                    geoQuery.removeAllListeners();
+                    final RadioButton radioButton = (RadioButton) findViewById(selectId);
 
-                    proLocationRef.removeEventListener(proLocationRefListener);
-
-                    if (proFoundID != null)
+                    if (radioButton.getText() == null)
                     {
-                        DatabaseReference proRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Professionals").child(proFoundID);
-
-                        proRef.setValue(true);
-
-                        proFoundID = null;
+                        return;
                     }
 
-                    proFound = false;
-                    radius = 10;
+                    requestService = radioButton.getText().toString();
+
+                    requestBol = true;
 
                     String userId = FirebaseAuth.getInstance().getUid();
 
                     DatabaseReference ref = FirebaseDatabase.getInstance().getReference("employerRequest");
 
                     GeoFire geoFire = new GeoFire(ref);
-                    geoFire.removeLocation(userId);
+                    geoFire.setLocation(userId, new GeoLocation(mLastLocation.getLatitude(), mLastLocation.getLongitude()));
 
-                    if (jobLocationMarker != null)
-                    {
-                        jobLocationMarker.remove();
-                    }
+                    employerLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+                    jobLocationMarker = mMap.addMarker(new MarkerOptions().position(employerLocation).title("We are here").icon(BitmapDescriptorFactory.fromResource(R.mipmap.jobicon)));
 
-                    mRequest.setText("Call Professional");
+
+                    mRequest.setText("Getting you a professional...");
+
+                    getClosestPro();
+
                 }
-                else
-                    {
-                        requestBol = true;
-
-                        String userId = FirebaseAuth.getInstance().getUid();
-
-                        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("employerRequest");
-
-                        GeoFire geoFire = new GeoFire(ref);
-                        geoFire.setLocation(userId, new GeoLocation(mLastLocation.getLatitude(), mLastLocation.getLongitude()));
-
-                        employerLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-                        jobLocationMarker = mMap.addMarker(new MarkerOptions().position(employerLocation).title("We are here").icon(BitmapDescriptorFactory.fromResource(R.mipmap.jobicon)));
-
-
-                        mRequest.setText("Getting you a professional...");
-
-                        getClosestPro();
-
-                    }
             }
         });
 
@@ -182,6 +192,18 @@ public class EmployerMapActivty extends FragmentActivity implements OnMapReadyCa
                 startActivity(intent);
                 return;
 
+            }
+        });
+
+        mHistory.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Intent intent = new Intent(EmployerMapActivty.this, HistoryActivity.class);
+                intent.putExtra("employerOrPro", "Employer");
+                startActivity(intent);
+                return;
             }
         });
 
@@ -200,6 +222,8 @@ public class EmployerMapActivty extends FragmentActivity implements OnMapReadyCa
                 //hapa toa tostring
                 // TODO: Get info about the selected place.
                 location = place.getName().toString();
+
+                locationLatLng = place.getLatLng();
 
             }
 
@@ -235,34 +259,64 @@ public class EmployerMapActivty extends FragmentActivity implements OnMapReadyCa
         geoQuery.addGeoQueryEventListener(new GeoQueryEventListener()
         {
             @Override
-            public void onKeyEntered(String key, GeoLocation location)
+            public void onKeyEntered(final String key, final GeoLocation location)
             {
 
                 if (!proFound  && requestBol)
                 {
-                    proFound=true;
-                    proFoundID = key;
+                    DatabaseReference mEmployerDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child("Professionals").child(key);
+                    mEmployerDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot)
+                        {
+                            if (dataSnapshot.exists() && dataSnapshot.getChildrenCount()> 0)
+                            {
+                                Map<String, Object> ProMap = (Map<String, Object>) dataSnapshot.getValue();
+                                if (proFound)
+                                {
+                                    return;
+                                }
 
+                                if(ProMap.get("service").equals(requestService))
+                                {
+                                    proFound=true;
+                                    proFoundID = dataSnapshot.getKey();
 
-                    //notify pro for a job
-                    DatabaseReference proRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Professionals").child(proFoundID).child("employerRequest");
+                                    //notify pro for a job
+                                    DatabaseReference proRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Professionals").child(proFoundID).child("employerRequest");
 
-                    String employerId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                                    String employerId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-                    HashMap map = new HashMap();
+                                    HashMap map = new HashMap();
 
-                    map.put("employerJobId", employerId);
-                    map.put("location", location);
-                    proRef.updateChildren(map);
+                                    map.put("employerJobId", employerId);
+                                    map.put("location", location);
+                                    map.put("locationLat", locationLatLng.latitude);
+                                    map.put("locationLng", locationLatLng.longitude);
+                                    proRef.updateChildren(map);
 
-                    //pro location for employer
+                                    //pro location for employer
 
-                    getProLocation();
-                    mRequest.setText("Finding Pro's location...");
+                                    getProLocation();
+                                    getProInfo();
+                                    getHasJobEnded();
+                                    mRequest.setText("Finding Pro's location...");
+
+                                }
+
+                            }
+
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError)
+                        {
+
+                        }
+                    });
 
 
                 }
-
 
             }
 
@@ -297,7 +351,7 @@ public class EmployerMapActivty extends FragmentActivity implements OnMapReadyCa
         });
 
     }
-  //getting pro location
+    //getting pro location
     private Marker mProMarker;
 
     private DatabaseReference proLocationRef;
@@ -310,7 +364,7 @@ public class EmployerMapActivty extends FragmentActivity implements OnMapReadyCa
 
         proLocationRefListener =  proLocationRef.addValueEventListener(new ValueEventListener()
 
-            //update location of pro
+                //update location of pro
         {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -330,7 +384,7 @@ public class EmployerMapActivty extends FragmentActivity implements OnMapReadyCa
                     if(mProMarker != null){
                         mProMarker.remove();
                     }
-                      //distance btwn two locations in meters
+                    //distance btwn two locations in meters
                     Location loc1 = new Location("");
                     loc1.setLatitude(employerLocation.latitude);
                     loc1.setLatitude(employerLocation.longitude);
@@ -346,9 +400,9 @@ public class EmployerMapActivty extends FragmentActivity implements OnMapReadyCa
                         mRequest.setText("Professional is here");
                     }
                     else
-                        {
-                            mRequest.setText("Found A Professional: " + distance);
-                        }
+                    {
+                        mRequest.setText("Found A Professional: " + distance);
+                    }
 
 
                     mRequest.setText("Found a Professional" + distance);
@@ -367,6 +421,130 @@ public class EmployerMapActivty extends FragmentActivity implements OnMapReadyCa
         });
 
     }
+
+    private void getProInfo()
+    {
+        mProInfo.setVisibility(View.VISIBLE);
+
+        DatabaseReference mEmployerDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child("Professionals").child(proFoundID).child("");
+        mEmployerDatabase.addListenerForSingleValueEvent(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot)
+            {
+                if (dataSnapshot.exists() && dataSnapshot.getChildrenCount()>0)
+                {
+                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                    //change into name from the db
+                    if(map.get("name") !=null)
+                    {
+                        mProName.setText(map.get("name").toString());
+                    }
+                    if(map.get("phone") !=null)
+                    {
+                        mProPhone.setText(map.get("phone").toString());
+                    }
+                    if(map.get("category") !=null)
+                    {
+                        mProCategory.setText(map.get("category").toString());
+                    }
+                    //calculating pro rating
+                    int ratingSum = 0;
+                    float ratingsTotal = 0;
+                    float ratingsAvg = 0;
+                    for (DataSnapshot child : dataSnapshot.child("rating").getChildren())
+                    {
+                        ratingSum = ratingSum + Integer.valueOf(child.getValue().toString());
+                        ratingsTotal++;
+                    }
+                    if (ratingsTotal != 0)
+                    {
+                        ratingsAvg = ratingSum/ratingsTotal;
+                        mRatingBar.setRating(ratingsAvg);
+                    }
+
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private DatabaseReference jobHasEndedRef;
+    private ValueEventListener jobHasEndedRefListener;
+    private void getHasJobEnded()
+    {
+
+        jobHasEndedRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Professionals").child(proFoundID).child("employerRequest").child("employerJobId");
+
+        jobHasEndedRefListener = jobHasEndedRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot)
+            {
+                if(dataSnapshot.exists())
+                {
+
+                }
+                else
+                {
+                    //pro cancelling job
+                    endJob();
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError)
+            {
+
+            }
+        });
+    }
+
+    private void endJob()
+    {
+        requestBol = false;
+        geoQuery.removeAllListeners();
+        proLocationRef.removeEventListener(proLocationRefListener);
+        jobHasEndedRef.removeEventListener(jobHasEndedRefListener);
+
+        if (proFoundID != null)
+        {
+            DatabaseReference proRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Professionals").child(proFoundID).child("employerRequest");
+
+            proRef.removeValue();
+            proFoundID = null;
+        }
+
+        proFound = false;
+        radius = 10;
+
+        String userId = FirebaseAuth.getInstance().getUid();
+
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("employerRequest");
+
+        GeoFire geoFire = new GeoFire(ref);
+        geoFire.removeLocation(userId);
+
+        if (jobLocationMarker != null)
+        {
+            jobLocationMarker.remove();
+        }
+
+        mRequest.setText("Call Professional");
+
+        mProInfo.setVisibility(View.GONE);
+        mProName.setText("");
+        mProPhone.setText("");
+        mProCategory.setText("Location: -- " );
+
+    }
+
+
     @Override
     public void onMapReady(GoogleMap googleMap)
     {
@@ -462,11 +640,69 @@ public class EmployerMapActivty extends FragmentActivity implements OnMapReadyCa
     }
 
 
-    @Override
-    protected void onStop()
+    //displaying all available pros
+    List<Marker> markerList = new ArrayList<Marker>();
+    private void getProsAround()
     {
-        super.onStop();
+        DatabaseReference prosLocation = FirebaseDatabase.getInstance().getReference().child(("prosAvailable"));
 
+        GeoFire geoFire = new GeoFire(prosLocation);
+        GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(mLastLocation.getLatitude(), mLastLocation.getLongitude()),1000);
+        geoQuery.addGeoQueryEventListener(new GeoQueryEventListener()
+        {
+            @Override
+            public void onKeyEntered(String key, GeoLocation location)
+            {
+                for (Marker markerIt : markerList)
+                {
+                    if (markerIt.getTag().equals(key))
+                        return;
+                }
+                LatLng proLocation = new LatLng(location.latitude, location.longitude);
+
+                Marker mProMarker = mMap.addMarker(new MarkerOptions().position(proLocation).title(key));
+                mProMarker.setTag(key);
+
+                markerList.add(mProMarker);
+            }
+
+            @Override
+            public void onKeyExited(String key)
+            {
+                for (Marker markerIt : markerList)
+                {
+                    if (markerIt.getTag().equals(key))
+                    {
+                        markerIt.remove();
+                        markerList.remove(markerIt);
+                        return;
+                    }
+                }
+            }
+
+            @Override
+            public void onKeyMoved(String key, GeoLocation location)
+            {
+
+                for (Marker markerIt : markerList)
+                {
+                    if (markerIt.getTag().equals(key))
+                    {
+                        markerIt.setPosition(new LatLng(location.latitude, location.longitude));
+                    }
+                }
+            }
+
+            @Override
+            public void onGeoQueryReady() {
+
+            }
+
+            @Override
+            public void onGeoQueryError(DatabaseError error) {
+
+            }
+        });
     }
 }
 

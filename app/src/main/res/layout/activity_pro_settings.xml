@@ -1,17 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    android:orientation="vertical"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.pata_qazi.EmployerSettingsActivity"
+    tools:context="com.example.pata_qazi.ProSettingsActivity"
+    android:orientation="vertical"
     android:padding="20sp"
     android:background="@drawable/background">
-
-
-    android:orientation="vertical"
 
     <EditText
         android:id="@+id/name"
@@ -33,6 +29,43 @@
         android:inputType="phone"
         android:textColorHint="@color/black"
         android:textColor="@color/white"/>
+
+    <EditText
+        android:id="@+id/category"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20sp"
+        android:background="@null"
+        android:hint="Skills"
+        android:textColorHint="@color/black"
+        android:textColor="@color/white"/>
+
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/radioGroup"
+        android:orientation="horizontal"
+        android:background="@color/colorPrimary">
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Maintenance"
+            android:id="@+id/Maintenance"/>
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Home Care"
+            android:id="@+id/HomeCare" />
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Freelance"
+            android:id="@+id/Freelance" />
+
+    </RadioGroup>
 
     <Button
         android:layout_width="150dp"

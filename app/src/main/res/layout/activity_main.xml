@@ -1,23 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:background="@drawable/background"
+    android:gravity="center">
 
+
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="300dp"
+        android:layout_height="150dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        app:srcCompat="@drawable/background_splash"
+        android:layout_marginBottom="110dp"/>
 
     <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="I'm a Professional"
-        android:id="@+id/professional"   />
+       android:layout_width="150dp"
+       android:layout_height="wrap_content"
+       android:text="Professional"
+       android:id="@+id/professional"
+        android:layout_centerInParent="true"
+        android:layout_marginBottom="60dp"
+        android:background="@color/colorAccent" />
 
     <Button
-        android:layout_width="match_parent"
+        android:id="@+id/employer"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:text="I'm an Employer "
-        android:id="@+id/employer"   />
-
-</androidx.appcompat.widget.LinearLayoutCompat>
+        android:layout_centerHorizontal="true"
+        android:text="Employer"
+        android:layout_marginBottom="50dp"
+        android:background="@color/colorAccent"/>
+</LinearLayout>

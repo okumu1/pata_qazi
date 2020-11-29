@@ -6,14 +6,6 @@
     android:layout_height="match_parent"
     tools:context="com.example.pata_qazi.ProMapActivity" >
 
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/logout"
-        android:text="logout" />
-
-
     <fragment
 
         android:id="@+id/map"
@@ -24,40 +16,95 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/employerInfo"
-        android:gravity="bottom"
-        android:orientation="horizontal"
-        android:background="@android:color/white"
-        android:visibility="gone" >
-
+        android:orientation="vertical">
         <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/logout"
+                android:text="logout"
+                android:background="@color/colorAccent"/>
+
+            <Button
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/history"
+                android:text="history"
+                android:background="@color/colorPrimaryDark"/>
+
+            <Button
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/settings"
+                android:text="Profile"
+                android:background="@color/colorAccent"/>
+
+        </LinearLayout>
+
+        <Switch
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingLeft="40sp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/employerLocation"
-                android:paddingBottom="10sp"
-                android:text="Location: --"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/employerName"
-                android:paddingBottom="10sp"
-                android:paddingTop="20sp"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/employerPhone"
-                android:paddingBottom="10sp"
-                android:paddingTop="20sp"/>
-        </LinearLayout>
+            android:text="Available"
+            android:layout_margin="10sp"
+            android:id="@+id/workingSwitch"
+            android:background="@color/colorPrimary"/>
 
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/employerInfo"
+        android:layout_gravity="bottom"
+        android:translationZ="1dp"
+        android:elevation="1dp"
+        android:orientation="vertical"
+        android:background="@android:color/white"
+        android:visibility="gone">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="40sp">
+
+                <TextView
+                    android:id="@+id/employerLocation"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="10sp"
+                    android:text="Location: --" />
+
+                <TextView
+                    android:id="@+id/employerName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="20sp"
+                    android:paddingBottom="10sp" />
+
+                <TextView
+                    android:id="@+id/employerPhone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="20sp"
+                    android:paddingBottom="10sp" />
+            </LinearLayout>
+        </LinearLayout>
+        <Button
+            android:id="@+id/jobStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="accept job request" />
+    </LinearLayout>
 </FrameLayout>
 

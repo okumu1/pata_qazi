@@ -1,30 +1,26 @@
 package com.example.pata_qazi;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentActivity;
-
 import android.Manifest;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationListener;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
 
 import com.directions.route.AbstractRouting;
 import com.directions.route.Route;
@@ -33,7 +29,6 @@ import com.directions.route.Routing;
 import com.directions.route.RoutingListener;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -42,10 +37,8 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -59,7 +52,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.security.Permission;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -69,8 +61,9 @@ public class ProMapActivity extends FragmentActivity implements OnMapReadyCallba
 {
 
     private GoogleMap mMap;
+    //hapa
+    GoogleApiClient mGoogleApiClient;
 
-   // GoogleApiClient mGoogleApiClient;
     Location mLastLocation;
     LocationRequest mLocationRequest;
     private FusedLocationProviderClient mFusedLocationClient;
@@ -110,10 +103,10 @@ public class ProMapActivity extends FragmentActivity implements OnMapReadyCallba
         }
         else */
 
-       mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 
-       mapFragment.getMapAsync(this);
+        mapFragment.getMapAsync(this);
 
 
         mEmoployerInfo = (LinearLayout) findViewById(R.id.employerInfo);
@@ -137,13 +130,13 @@ public class ProMapActivity extends FragmentActivity implements OnMapReadyCallba
                     connectPro();
                 }
                 else
-                    {
-                        disconnectPro();
-                    }
+                {
+                    disconnectPro();
+                }
             }
         });
 
-        mSettings = (Button) findViewById(R.id.settings);
+
 
         mJobStatus = (Button) findViewById(R.id.jobStatus);
         mJobStatus.setOnClickListener(new View.OnClickListener()
@@ -194,15 +187,15 @@ public class ProMapActivity extends FragmentActivity implements OnMapReadyCallba
             }
         });
 
-
+        mSettings = (Button) findViewById(R.id.settings);
         mSettings.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
-                Intent intent = new Intent(ProMapActivity.this, ProSettingsActivity.class);
+                Intent intent = new Intent(ProMapActivity.this, PROSETTINGS.class);
                 startActivity(intent);
-                finish();
+                //finish();
                 return;
 
             }
@@ -247,9 +240,9 @@ public class ProMapActivity extends FragmentActivity implements OnMapReadyCallba
 
                 //called when employer cancels request
                 else
-                  {
-                      endJob();
-                  }
+                {
+                    endJob();
+                }
 
             }
 
@@ -311,7 +304,7 @@ public class ProMapActivity extends FragmentActivity implements OnMapReadyCallba
         if(jobLatLng != null && mLastLocation != null ) {
 
             Routing routing = new Routing.Builder()
-                    .travelMode(AbstractRouting.TravelMode.DRIVING)
+                    .travelMode(AbstractRouting.TravelMode.WALKING)
                     .withListener(this)
                     .alternativeRoutes(false)
                     .waypoints(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), jobLatLng)
@@ -340,9 +333,9 @@ public class ProMapActivity extends FragmentActivity implements OnMapReadyCallba
                         mEmployerLocation.setText("Location:" + location);
                     }
                     else
-                        {
-                            mEmployerLocation.setText("Location: --");
-                        }
+                    {
+                        mEmployerLocation.setText("Location: --");
+                    }
 
                     Double locationLat = 0.0;
                     Double locationLng = 0.0;
@@ -388,7 +381,7 @@ public class ProMapActivity extends FragmentActivity implements OnMapReadyCallba
                     }
                     if(map.get("phone") !=null)
                     {
-                       mEmployerPhone.setText(map.get("phone").toString());
+                        mEmployerPhone.setText(map.get("phone").toString());
                     }
 
                 }
@@ -406,11 +399,11 @@ public class ProMapActivity extends FragmentActivity implements OnMapReadyCallba
     {
         mJobStatus.setText("Request accepted");
         erasePolylines();
-            String userId = FirebaseAuth.getInstance().getUid();
-            DatabaseReference proRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Professionals").child(userId).child("employerRequest");
-            proRef.removeValue();
+        String userId = FirebaseAuth.getInstance().getUid();
+        DatabaseReference proRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Professionals").child(userId).child("employerRequest");
+        proRef.removeValue();
 
-            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("employerRequest");
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("employerRequest");
 
         GeoFire geoFire = new GeoFire(ref);
         geoFire.removeLocation(userId);
@@ -437,31 +430,31 @@ public class ProMapActivity extends FragmentActivity implements OnMapReadyCallba
     }
 
     //saving job with unique ID
-   private void recordJob()
-   {
-       String userId = FirebaseAuth.getInstance().getUid();
-       DatabaseReference proRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Professionals").child(userId).child("history");
-       DatabaseReference employerRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Employer").child(employerId).child("history");
-       DatabaseReference historyRef = FirebaseDatabase.getInstance().getReference().child("history");
-       String requestId = historyRef.push().getKey();
-       proRef.child(requestId).setValue(true);
-       employerRef.child(requestId).setValue(true);
+    private void recordJob()
+    {
+        String userId = FirebaseAuth.getInstance().getUid();
+        DatabaseReference proRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Professionals").child(userId).child("history");
+        DatabaseReference employerRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Employer").child(employerId).child("history");
+        DatabaseReference historyRef = FirebaseDatabase.getInstance().getReference().child("history");
+        String requestId = historyRef.push().getKey();
+        proRef.child(requestId).setValue(true);
+        employerRef.child(requestId).setValue(true);
 
-       HashMap map = new HashMap();
-       map.put("professional", userId);
-       map.put("employer", employerId);
-       map.put("rating", 0);
-       map.put("timestamp", getCurrentTimestamp());
-       map.put("location", location);
-       //incase of idssues weka locationLatLng.latitude);
-       map.put("location/from/lat", jobLatLng.latitude);
-       map.put("location/from/lng", jobLatLng.longitude);
-       map.put("location/to/lat", locationLatLng.latitude);
-       map.put("location/to/lng", locationLatLng.longitude);
-       map.put("distance", jobDistance);
-       historyRef.child(requestId).updateChildren(map);
+        HashMap map = new HashMap();
+        map.put("professional", userId);
+        map.put("employer", employerId);
+        map.put("rating", 0);
+        map.put("timestamp", getCurrentTimestamp());
+        map.put("location", location);
+        //incase of idssues weka locationLatLng.latitude);
+        map.put("location/from/lat", jobLatLng.latitude);
+        map.put("location/from/lng", jobLatLng.longitude);
+        map.put("location/to/lat", locationLatLng.latitude);
+        map.put("location/to/lng", locationLatLng.longitude);
+        map.put("distance", jobDistance);
+        historyRef.child(requestId).updateChildren(map);
 
-   }
+    }
 
     private long getCurrentTimestamp()
     {
@@ -486,9 +479,9 @@ public class ProMapActivity extends FragmentActivity implements OnMapReadyCallba
             {
             }
             else
-                {
-                    checkLocationPermission();
-                }
+            {
+                checkLocationPermission();
+            }
         }
     }
 
@@ -549,8 +542,8 @@ public class ProMapActivity extends FragmentActivity implements OnMapReadyCallba
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION))
             {
                 new AlertDialog.Builder(this)
-                    .setTitle("give permission")
-                    .setMessage("give permission message")
+                        .setTitle("give permission")
+                        .setMessage("give permission message")
                         .setPositiveButton("OK", new DialogInterface.OnClickListener()
                         {
                             @Override
@@ -560,13 +553,13 @@ public class ProMapActivity extends FragmentActivity implements OnMapReadyCallba
 
                             }
                         })
-                .create()
-                .show();
+                        .create()
+                        .show();
             }
             else
-                {
-                    ActivityCompat.requestPermissions(ProMapActivity.this, new String[]{ Manifest.permission.ACCESS_FINE_LOCATION},1);
-                }
+            {
+                ActivityCompat.requestPermissions(ProMapActivity.this, new String[]{ Manifest.permission.ACCESS_FINE_LOCATION},1);
+            }
         }
     }
     @Override
@@ -668,10 +661,10 @@ public class ProMapActivity extends FragmentActivity implements OnMapReadyCallba
     //clearing route from map
     private void erasePolylines()
     {
-      for (Polyline line : polylines)
-      {
-          line.remove();
-      }
-      polylines.clear();
+        for (Polyline line : polylines)
+        {
+            line.remove();
+        }
+        polylines.clear();
     }
 }

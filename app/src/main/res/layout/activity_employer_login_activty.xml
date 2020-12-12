@@ -45,7 +45,6 @@
         android:layout_marginTop="90dp"
         android:background="@color/colorAccent"
         android:text="login"
-        android:textColor="@color/colorPrimaryDark"
         android:layout_centerInParent="true"/>
 
     <Button

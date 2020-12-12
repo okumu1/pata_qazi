@@ -136,10 +136,10 @@
                     android:id="@+id/Maintenance"/>
 
                 <RadioButton
+                    android:id="@+id/HomeCare"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Home Care"
-                    android:id="@+id/HomeCare"/>
+                    android:layout_height="match_parent"
+                    android:text="Home Care" />
 
                 <RadioButton
                     android:layout_width="wrap_content"
@@ -150,12 +150,12 @@
             </RadioGroup>
 
             <Button
+                android:id="@+id/request"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Find Pro"
-                android:id="@+id/request"
                 android:layout_gravity="bottom"
-                android:background="@color/colorAccent" />
+                android:background="@color/colorAccent"
+                android:text="Find Pro" />
 
         </LinearLayout>
 

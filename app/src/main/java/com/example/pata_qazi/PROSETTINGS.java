@@ -19,9 +19,8 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ProSettingsActivity extends AppCompatActivity
+public class PROSETTINGS extends AppCompatActivity
 {
-
     private EditText mNameField, mPhoneField, mSkillField;
 
     private Button mBack, mConfirm;
@@ -42,15 +41,14 @@ public class ProSettingsActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pro_settings);
 
+        mNameField = findViewById(R.id.name);
+        mPhoneField = findViewById(R.id.phone);
+        mSkillField = findViewById(R.id.skills);
 
-        mNameField = (EditText) findViewById(R.id.name);
-        mPhoneField = (EditText) findViewById(R.id.phone);
-        mSkillField = (EditText) findViewById(R.id.skills);
+        mRadioGroup = findViewById(R.id.radioGroup);
 
-        mRadioGroup = (RadioGroup) findViewById(R.id.radioGroup);
-
-        mBack = (Button) findViewById(R.id.back);
-        mConfirm = (Button) findViewById(R.id.confirm);
+        mBack = findViewById(R.id.back);
+        mConfirm = findViewById(R.id.confirm);
 
         mAuth = FirebaseAuth.getInstance();
         userID = mAuth.getCurrentUser().getUid();
@@ -63,15 +61,12 @@ public class ProSettingsActivity extends AppCompatActivity
             public void onClick(View v) {
                 saveUserInformation();
             }
-
-
         });
 
         mBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
-                return;
             }
         });
     }
@@ -115,29 +110,28 @@ public class ProSettingsActivity extends AppCompatActivity
             }
         });
     }
-            private void saveUserInformation() {
-                mName = mNameField.getText().toString();
-                mPhone = mPhoneField.getText().toString();
-                mSkills = mSkillField.getText().toString();
+    private void saveUserInformation() {
+        mName = mNameField.getText().toString();
+        mPhone = mPhoneField.getText().toString();
+        mSkills = mSkillField.getText().toString();
 
-                int selectId = mRadioGroup.getCheckedRadioButtonId();
+        int selectId = mRadioGroup.getCheckedRadioButtonId();
 
-                final RadioButton radioButton = (RadioButton) findViewById(selectId);
+        final RadioButton radioButton = findViewById(selectId);
 
-                if (radioButton.getText() == null){
-                    return;
-                }
-
-                mService = radioButton.getText().toString();
-
-                Map userInfo = new HashMap();
-                userInfo.put("name", mName);
-                userInfo.put("phone", mPhone);
-                userInfo.put("skills", mSkills);
-                userInfo.put("service", mService);
-                mProDatabase.updateChildren(userInfo);
-
-                finish();
-            }
-
+        if (radioButton.getText() == null){
+            return;
         }
+
+        mService = radioButton.getText().toString();
+
+        Map userInfo = new HashMap();
+        userInfo.put("name", mName);
+        userInfo.put("phone", mPhone);
+        userInfo.put("skills", mSkills);
+        userInfo.put("service", mService);
+        mProDatabase.updateChildren(userInfo);
+
+        finish();
+    }
+}
